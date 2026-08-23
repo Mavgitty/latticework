@@ -1,0 +1,11 @@
+import { chromium } from 'playwright';
+const url='file:///home/claude/pk/latticework.html';
+const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium-1194/chrome-linux/chrome'});
+const ctx=await b.newContext({viewport:{width:390,height:844},deviceScaleFactor:2});
+const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
+await p.goto(url); await p.waitForTimeout(400); await p.click('[data-act="guest"]'); await p.waitForTimeout(400);
+console.log('featured:', await p.textContent('.feature .eyebrow'));
+console.log('feed:', await p.$$eval('.rowcard .src', n=>n.map(x=>x.textContent)));
+await p.screenshot({path:'shot/S-home.png', fullPage:true});
+console.log('errors:', errs.length?errs:'none');
+await b.close();

@@ -1,0 +1,25 @@
+global.window = {};
+require('./data0.js'); require('./data1.js'); require('./data2.js'); require('./data3.js'); require('./data4.js'); require('./data5_tfs.js'); require('./data6_zto.js'); require('./data7_tii.js'); require('./data8_tib.js'); require('./dataA_pcs.js'); require('./dataA_tpl.js'); require('./dataA_csup.js'); require('./dataA_tmit.js'); require('./dataA_tos.js'); require('./dataA_s7p.js'); require('./dataA_fsh.js'); require('./dataA_fbr.js'); require('./dataA_tbs.js'); require('./dataA_pom.js'); require('./dataD_ewb.js'); require('./dataD_sa.js'); require('./dataD_mos.js'); require('./dataD_twbw.js'); require('./dataD_ouww.js'); require('./dataD_ycbsmg.js'); require('./dataD_lbbw.js'); require('./dataD_fr.js'); require('./dataD_tic.js'); require('./dataD_lbv.js'); require('./dataD_mck.js'); require('./dataD_afv.js'); require('./dataD_cr.js'); require('./dataD_lbcsi.js'); require('./dataD_cap.js'); require('./dataF_vd.js'); require('./dataF_sshr.js'); require('./dataF_bvc.js'); require('./dataF_mvcg.js'); require('./dataF_ctc.js'); require('./dataF_csp.js'); require('./dataF_tls.js'); require('./dataF_htht.js'); require('./dataF_cd.js'); require('./dataF_tid.js'); require('./dataF_gsbs.js'); require('./dataF_otps.js'); require('./dataF_pr.js'); require('./dataF_goal.js'); require('./dataF_halo.js'); require('./dataF_cinc.js'); require('./dataH_atg.js'); require('./dataH_inf.js'); require('./dataH_sw.js'); require('./dataH_rwh.js'); require('./dataH_caf.js'); require('./dataH_wnf.js'); require('./dataH_won.js'); require('./dataH_gt.js'); require('./dataH_rts.js'); require('./dataJ_sap.js'); require('./dataJ_loh.js'); require('./dataJ_ggs.js'); require('./dataJ_rftr.js'); require('./dataJ_tsr.js'); require('./dataJ_pog.js'); require('./dataJ_hpw.js'); require('./dataJ_dfre.js'); require('./dataJ_pw2.js'); require('./dataJ_tcw.js'); require('./dataJ_cae.js'); require('./dataJ_aom.js'); require('./dataJ_gk.js'); require('./dataJ_nap.js'); require('./dataJ_han.js'); require('./dataL_sd.js'); require('./dataL_mia.js'); require('./dataL_tes.js'); require('./dataL_sj.js'); require('./dataL_tit.js'); require('./dataL_open.js'); require('./dataL_igt.js'); require('./dataL_rel.js'); require('./dataL_sb.js'); require('./dataL_chm.js'); require('./data9_links.js'); require('./dataB_links.js'); require('./dataC_links.js'); require('./dataE_links.js'); require('./dataG_links.js'); require('./dataI_links.js'); require('./dataK_links.js'); require('./dataM_links.js');
+const DB = window.DB;
+const ids = new Set(DB.ideas.map(i=>i.id));
+const mids = new Set(DB.mental_models.map(m=>m.id));
+const cats = new Set(DB.categories.map(c=>c.id));
+console.log('ideas:', DB.ideas.length);
+console.log('nums:', DB.ideas.map(i=>i.num).join(','));
+let bad=[];
+DB.ideas.forEach(i=>{
+  if(!cats.has(i.category)) bad.push(`bad category ${i.id} ${i.category}`);
+  i.models.forEach(m=>{ if(!mids.has(m)) bad.push(`bad model ${i.id} -> ${m}`); });
+  i.connections.forEach(c=>{ if(!ids.has(c.to)) bad.push(`bad conn ${i.id} -> ${c.to}`);
+    if(!['related','extends','contrasts','reinforces'].includes(c.type)) bad.push(`bad type ${i.id} ${c.type}`); });
+  ['title','thesis','explanation','practical','application'].forEach(k=>{ if(!i[k]) bad.push(`missing ${k} on ${i.id}`); });
+  if(i.explanation.length<2) bad.push(`short explanation ${i.id}`);
+  if(!i.practical.bullets || i.practical.bullets.length<4) bad.push(`thin practical ${i.id}`);
+});
+console.log('quotes:', DB.ideas.filter(i=>i.quote).length, 'unavailable:', DB.ideas.filter(i=>!i.quote).length);
+const byCat={}; DB.ideas.forEach(i=>byCat[i.category]=(byCat[i.category]||0)+1); console.log(byCat);
+const used=new Set(); DB.ideas.forEach(i=>i.models.forEach(m=>used.add(m)));
+console.log('unused models:', [...mids].filter(m=>!used.has(m)));
+const words = DB.ideas.map(i=>(i.explanation.join(' ')+' '+i.application).split(/\s+/).length);
+console.log('explanation+application words: min', Math.min(...words), 'max', Math.max(...words), 'total', words.reduce((a,b)=>a+b,0));
+console.log(bad.length? bad : 'OK no issues');
