@@ -39,6 +39,7 @@
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{
   background:var(--bg); color:var(--ink);
   font-family:var(--sans); font-size:15px; line-height:1.5;
@@ -187,6 +188,11 @@ a.tag:hover{background:var(--accent-soft);color:var(--accent-ink);border-color:v
 .ovbody{flex:1;overflow-y:auto;padding:18px 20px 40px;max-width:var(--max);margin:0 auto;width:100%}
 .hint{font-size:13px;color:var(--ink3);line-height:1.6}
 .sugg{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.exlist{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.exitem{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:13px 14px;background:var(--paper);border:1px solid var(--rule);border-radius:12px;font-size:13.5px;line-height:1.5;color:var(--ink2);transition:.15s}
+.exitem:hover{border-color:var(--accent-line);background:var(--accent-soft);color:var(--accent-ink)}
+.exitem span{flex:1}
+.exitem svg{flex:none;color:var(--ink4)}
 .findic svg{width:22px;height:22px;flex:none;display:block}
 
 /* ---------- modal ---------- */
@@ -28501,8 +28507,8 @@ window.DB.ideas.push(
       return '<p class="hint" style="margin-top:18px">Add a little more detail and this will surface what applies. A sentence or two, naming the decision, is usually enough.</p>';
     }
     return '<p class="hint" style="margin-top:18px">The more concrete the situation, the sharper the match. For example:</p>' +
-      '<div class="sugg">' + FIND_EXAMPLES.map(function (s) {
-        return '<button class="tag" data-act="findfill" data-q="' + esc(s) + '">' + esc(s) + "</button>";
+      '<div class="exlist">' + FIND_EXAMPLES.map(function (s) {
+        return '<button class="exitem" data-act="findfill" data-q="' + esc(s) + '"><span>' + esc(s) + '</span>' + IC.arrow + "</button>";
       }).join("") + "</div>";
   }
   function findResultsHTML(q) {
